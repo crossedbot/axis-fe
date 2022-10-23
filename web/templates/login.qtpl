@@ -1,0 +1,111 @@
+{% func LoginPage() %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Axis - Login</title>
+    <link rel="stylesheet" type="text/css" href="static/fontawesome/css/all.min.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="static/css/axiom.css" media="screen">
+
+    <script src="static/js/axiom.js"></script>
+    <script src="static/js/simpleauth.js"></script>
+    <script src="static/js/axis.js"></script>
+  </head>
+  <body>
+    {%= NavigationBar() %}
+    <div class="page">
+      <div class="form-contents">
+        <div class="form-contents__container">
+          {%= LoginForm() %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+{% endfunc %}
+
+{% func LoginForm() %}
+          <form id="loginForm" accept-charset="UTF-8">
+            <h1>Login</h1>
+            <div id="alertDiv" class="form__section"></div>
+            <div class="form__section">
+              <label for="username" class="form__label">Username or email address:</label>
+              <input type="text" name="username" placeholder="hello.world" class="form__textbox" />
+            </div>
+            <div class="form__section">
+              <label for="password" class="form__label">Password:</label>
+              <input type="password" name="password" class="form__password" />
+            </div>
+            <div class="form__section">
+              <a href="signup" class="link form__link">Sign-up</a>
+              <button type="submit" class="btn btn--block btn--primary">Login</button>
+            </div>
+          </form>
+          <script>
+            docReady(() => {
+              let loginForm = document.getElementById('loginForm');
+              loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                login(loginForm.username.value, loginForm.password.value)
+                  .then(() => {
+                    if (is2faRequired()) {
+                      window.location = '/two-factor';
+                      return;
+                    }
+                    window.location = '/';
+                  })
+                  .catch(err => { displayAlert('danger', err, 'alertDiv'); });
+              });
+            });
+          </script>
+{% endfunc %}
+
+{% func TwofaPage() %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Axis - 2FA</title>
+    <link rel="stylesheet" type="text/css" href="static/fontawesome/css/all.min.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="static/css/axiom.css" media="screen">
+
+    <script src="static/js/axiom.js"></script>
+    <script src="static/js/simpleauth.js"></script>
+    <script src="static/js/axis.js"></script>
+  </head>
+  <body>
+    {%= NavigationBar() %}
+    <div class="page">
+      <div class="form-contents">
+        <div class="form-contents__container">
+          {%= TwofaForm() %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+{% endfunc %}
+
+{% func TwofaForm() %}
+          <form id="twofaForm" accept-charset="UTF-8">
+            <h1>2-Factor Authentication</h1>
+            <div id="alertDiv" class="form__section"></div>
+            <div class="form__section">
+              <label for="authCode" class="form__label">Authentication Code:</label>
+              <input type="text" name="authCode" placeholder="XXXXXX" class="form__textbox" />
+            </div>
+            <div class="form__section">
+              <button type="submit" class="btn btn--block btn--primary">Verify</button>
+            </div>
+          </form>
+          <script>
+            docReady(() => {
+              let twofaForm = document.getElementById('twofaForm');
+              twofaForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                let tkn = getAuthToken();
+                validateOtp(tkn, twofaForm.authCode.value)
+                  .then(() => { window.location = '/'; })
+                  .catch(err => { displayAlert('danger', err, 'alertDiv'); });
+              });
+            });
+          </script>
+{% endfunc %}

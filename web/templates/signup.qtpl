@@ -1,0 +1,110 @@
+{% func SignupPage() %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Axis - Sign-up</title>
+    <link rel="stylesheet" type="text/css" href="static/fontawesome/css/all.min.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="static/css/axiom.css" media="screen">
+
+    <script src="static/js/axiom.js"></script>
+    <script src="static/js/simpleauth.js"></script>
+    <script src="static/js/axis.js"></script>
+  </head>
+  <body>
+    {%= NavigationBar() %}
+    <div class="page">
+      <div class="form-contents">
+        <div class="form-contents__container">
+          {%= SignupForm() %}
+        </div>
+      </div>
+      {%= QrCodeModal() %}
+    </div>
+  </body>
+</html>
+{% endfunc %}
+
+{% func SignupForm() %}
+          <form id="signupForm">
+            <h1>Register Account</h1>
+            <div id="alertDiv" class="form__section"></div>
+            <div class="form__section">
+              <label for="username" class="form__label">Username:</label>
+              <input type="text" name="username" placeholder="hello.world" class="form__textbox" />
+            </div>
+            <div class="form__section">
+              <label for="email" class="form__label">Email (optional):</label>
+              <input type="text" name="email" placeholder="hello@world.com" class="form__textbox" />
+            </div>
+            <div class="form__section">
+              <label for="password" class="form__label">Password:</label>
+              <input type="password" name="password" placeholder="password" class="form__password" />
+              <input type="password" name="confirm" placeholder="confirm" class="form__password" />
+            </div>
+            <div class="form__section">
+              <label for="totp">Enable TOTP:</label>
+              <input type="checkbox" name="totp" />
+            </div>
+            <div class="form__section">
+              <button type="submit" class="btn btn--block btn--primary">Register</button>
+            </div>
+          </form>
+          <script>
+            docReady(() => {
+              let signupForm = document.getElementById('signupForm');
+              signupForm.addEventListener('submit', async (ev) => {
+                ev.preventDefault();
+                if (signupForm.username.value === '' && signupForm.email.value === '') {
+                  displayAlert('danger', 'Username or email address is required', 'alertDiv');
+                  return;
+                }
+                if (signupForm.password.value === '') {
+                  displayAlert('danger', 'A password is required', 'alertDiv');
+                  return;
+                }
+                if (signupForm.password.value !== signupForm.confirm.value) {
+                  displayAlert('danger', 'Passwords do not match', 'alertDiv');
+                  return;
+                }
+                signup(
+                  signupForm.email.value,
+                  signupForm.password.value,
+                  signupForm.totp.checked,
+                  signupForm.username.value,
+                )
+                  .then(() => {
+                    if (is2faRequired()) {
+                      getOtpQrCode(getAuthToken())
+                        .then(img => {
+                          let imageDiv = document.getElementById('qrCodeImageDiv');
+                          imageDiv.querySelector('img').src = img;
+                          let modal = document.getElementById('qrCodeModal');
+                          let closeBtn = document.getElementById('qrCodeCloseBtn');
+                          modal.style.display = 'flex';
+                          closeBtn.onclick = (ev) => {
+                            modal.style.display = 'none';
+                            window.location = '/';
+                          }
+                        });
+                    } else {
+                      window.location = '/';
+                    }
+                  })
+                  .catch(err => { displayAlert('danger', err, 'alertDiv'); });
+              });
+            });
+          </script>
+{% endfunc %}
+
+{% func QrCodeModal() %}
+  <div id="qrCodeModal" class="modal">
+    <div class="modal__container">
+      <h1 style="text-align:center;">2FA QR Code</h1>
+      <p class="bold" style="text-align:center;">Scan with authenticator app.</p>
+      <div id="qrCodeImageDiv" class="form__section" style="text-align:center;">
+        <img style="width:75%;" />
+      </div>
+      <button id="qrCodeCloseBtn" class="btn btn--block btn--primary">OK</button>
+    </div>
+  </div>
+{% endfunc %}

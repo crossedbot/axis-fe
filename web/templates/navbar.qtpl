@@ -1,0 +1,33 @@
+{% func NavigationBar() %}
+    <div class="nav">
+      <div class="nav__container">
+        <div class="nav__item col-8">
+          <div class="grid">
+            <a class="nav__logo" href="/">
+              <img src="/static/assets/logo.png" alt="axis.png" />
+            </a>
+            <h2>Axis</h2>
+          </div>
+        </div>
+        <div class="nav__item col-4" style="justify-content:right;">
+          <div id="userNavOptionsDiv" class="grid" style="display:none;">
+            <a href="#" id="userNavNameBtn" class="grid__item link link--black"></a>
+            <a href="#" id="logoutBtn" class="grid__item link link--black" style="text-decoration:underline;">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {%= UserProfileModal() %}
+{% endfunc %}
+
+{% func UserProfileModal() %}
+    <div id="userProfileModal" class="modal">
+      <div class="modal__container">
+        <div>
+          <span id="closeUserProfileModalBtn" class="close">&times;</span>
+        </div>
+        <div id="userProfileAlert"></div>
+        <div id="userProfileDetails"></div>
+      </div>
+    </div>
+{% endfunc %}

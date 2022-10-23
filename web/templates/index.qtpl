@@ -1,0 +1,28 @@
+{% func IndexPage() %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="static/fontawesome/css/all.min.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="static/css/axiom.css" media="screen">
+
+    <script src="static/js/axiom.js"></script>
+    <script src="static/js/simpleauth.js"></script>
+    <script src="static/js/axis.js"></script>
+  </head>
+  <body>
+    {%= NavigationBar() %}
+    <div class="page">
+      <div id="pinsTableAlertDiv"></div>
+      <div id="pinsTableDiv"></div>
+    </div>
+  </body>
+  <script>
+    docReady(async () => {
+      const filters = new Map([
+        ['limit', PINS_PAGE_LIMIT],
+      ]);
+      populatePinsTable('pinsTableDiv', 'pinsTableAlertDiv', filters);
+    });
+  </script>
+</html>
+{% endfunc %}

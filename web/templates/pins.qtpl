@@ -1,0 +1,231 @@
+{% import (
+  "strconv"
+  "strings"
+  "time"
+
+  "github.com/crossedbot/axis/pkg/pins/models"
+) %}
+
+{% func Pins(pins models.Pins, index, nPages int, sortBy string) %}
+  <div>
+    <div class="box box__header">
+      <h3 class="col-10">Pins</h3>
+      <div>
+        {%= PinsSortDropdown(sortBy) %}
+      </div>
+      <div>
+        <button id="openCreatePinModalBtn" class="btn">
+          <i class="fa-regular fa-plus bold"></i>
+        </button>
+      </div>
+    </div>
+    <div class="box box__row grid bold">
+      <div class="grid__item col-5">Request ID</div>
+      <div class="grid__item col-3">Name</div>
+      <div class="grid__item col-2">Date</div>
+      <div class="grid__item col-2">Status</div>
+    </div>
+    {% for _, pin := range pins.Results %}
+      {% code
+        pin.Created, _ = parseUnixTimestamp("2006/01/02", pin.Created)
+        if len(pin.Pin.Name) > 19 {
+          pin.Pin.Name = pin.Pin.Name[:16]+"..."
+        }
+      %}
+    <div class="box box__row grid">
+      <div class="grid__item col-5"><a class="link pinid" href="#">{%s pin.Id %}</a></div>
+      <div class="grid__item col-3">{%s pin.Pin.Name %}</div>
+      <div class="grid__item col-2">{%s pin.Created %}</div>
+      <div class="grid__item col-2">{%s pin.Status %}</div>
+    </div>
+    {% endfor %}
+    <div class="box box__footer">
+      {%= Paginate(index, nPages, sortBy) %}
+    </div>
+    {%= PinStatusModal() %}
+    {%= CreatePinModal() %}
+  </div>
+{% endfunc %}
+
+{% func PinsSortDropdown(sortBy string) %}
+  {% code
+    selected := 0
+    switch strings.ToLower(sortBy) {
+      case "name":
+        selected = 1
+      case "status":
+        selected = 2
+    }
+  %}
+  <details id="pinsSortDropdown" class="dropdown">
+    <summary class="btn">
+      Sort
+      <div class="dropdown__caret"></div>
+    </summary>
+    <ul class="dropdown__menu">
+      <li><a class="dropdown__item{% if selected == 0 %} dropdown__item--active{% endif %}" name="created">Date</a></li>
+      <li><a class="dropdown__item{% if selected == 1 %} dropdown__item--active{% endif %}" name="name">Name</a></li>
+      <li><a class="dropdown__item{% if selected == 2 %} dropdown__item--active{% endif %}" name="status">Status</a></li>
+    </ul>
+  </details>
+{% endfunc %}
+
+{% func PinStatus(pin models.PinStatus) %}
+  {% code
+    pin.Created, _ = parseUnixTimestamp("2006-01-02 15:04:05 -0700", pin.Created)
+  %}
+  <div>
+    <div class="form__section">
+      <div style="margin-bottom:14px;">
+        <h1 style="display:inline-block;vertical-align:middle;margin:0px;">Pin Status</h1>
+        {% if pin.Status != "" %}
+        <div class="tag" style="display:inline-block;vertical-align:middle;">{%s pin.Status %}</div>
+        {% endif %}
+      </div>
+      <div class="grid">
+        <label for="pinid" class="bold col-2">Request ID:</label>
+        <p name="pinid" style="margin:0px;">{%s pin.Id %}</p>
+      </div>
+      <div class="grid">
+        <label for="creationDate" class="bold col-2">Created:</label>
+        <p name="creationDate" style="margin:0px;">{%s pin.Created %}</p>
+      </div>
+      <div class="grid">
+        <label for="cid" class="bold col-2">CID:</label>
+        <p name="cid" style="margin:0px;">{%s pin.Pin.Cid %}</p>
+      </div>
+      <div class="grid">
+        <label for="pinName" class="bold col-2">Name:</label>
+        {% if pin.Pin.Name != "" %}
+        <p name="name" style="display:inline-block;margin:0px;">{%s pin.Pin.Name %}</p>
+        {% else %}
+        <i style="color:#8c959f;">None</i>
+        {% endif %}
+      </div>
+    </div>
+    <div class="form__section">
+      <label for="pinOrigins" class="bold">Origins:</label>
+      {% if len(pin.Pin.Origins) > 0 %}
+      <div name="pinOrigins">
+        <ul style="margin:4px 0px;">
+        {% for _, origin := range pin.Pin.Origins %}
+          <li>{%s origin %}</li>
+        {% endfor %}
+        </ul>
+      {% else %}
+      <div name="pinOrigins" style="text-align:center;">
+        <i style="color:#8c959f;">None</i>
+      {% endif %}
+      </div>
+    </div>
+    <div class="form__section">
+      <label for="pinMetaInfo" class="bold">Meta Info:</label>
+      <div name="pinMetaInfo" style="margin-top:4px;">
+        <div class="box box__header grid">
+          <div class="grid__item bold col-4">Key</div>
+          <div class="grid__item bold col-8">Value</div>
+        </div>
+        {% if len(pin.Pin.Meta) > 0 %}
+          {% code i := 0 %}
+          {% for k, v := range pin.Pin.Meta %}
+            {% if i < len(pin.Pin.Meta)-1 %}
+        <div class="box box__row grid">
+            {% else %}
+        <div class="box box__footer grid">
+            {% endif %}
+          <div class="grid__item col-4">{%s k %}</div>
+          <div class="grid__item col-8">{%s v %}</div>
+        </div>
+            {% code i++ %}
+          {% endfor %}
+        {% else %}
+        <div class="box box__footer grid">
+          <div class="grid__item col-12" style="display:block;text-align:center;">
+            <i style="color:#8c959f;">None</i>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endfunc %}
+
+{% func PinStatusModal() %}
+  <div id="pinStatusModal" class="modal">
+    <div class="modal__container modal__container--large">
+      <div style="display:inline-block;width:100%;">
+        <span id="closePinStatusModalBtn" class="close">&times;</span>
+      </div>
+      <div id="pinStatusAlertDiv"></div>
+      <div id="pinStatusDetailsDiv"></div>
+    </div>
+  </div>
+{% endfunc %}
+
+{% func CreatePinModal() %}
+  <div id="createPinModal" class="modal">
+    <div class="modal__container">
+      <div style="display:inline-block;width:100%;">
+        <span id="closeCreatePinModalBtn" class="close">&times;</span>
+      </div>
+      <div id="createPinAlertDiv"></div>
+      <form id="createPinForm">
+        <h1 style="margin-top:0px;">Create Pin</h1>
+        <div class="form__section">
+          <label for="createPinCid" class="form__label">CID:</label>
+          <input type="text" name="createPinCid" class="form__textbox" />
+        </div>
+        <div class="form__section">
+          <label for="createPinName" class="form__label">Name:</label>
+          <input type="text" name="createPinName" class="form__textbox" />
+        </div>
+        <div class="form__section">
+          <label for="createPinOrigins" class="form__label">Origins:</label>
+          <div name="createPinOrigins" id="createPinOriginsDiv"></div>
+          <button id="newOriginInputBtn" class="btn btn--block">
+            <i class="fa-regular fa-plus bold"></i>
+          </button>
+        </div>
+        <div class="form__section">
+          <label for="createPinMetaInfo" class="form__label">Meta Info:</label>
+          <div name="createPinMetaInfo" id="createPinMetaInfoDiv"></div>
+          <button id="newMetaInfoBtn" class="btn btn--block">
+            <i class="fa-regular fa-plus bold"></i>
+          </button>
+        </div>
+        <div class="form__section" style="border-top:1px solid #000000;padding-top:14px;">
+          <button type="submit" class="btn btn--block btn--primary">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endfunc %}
+
+{% func Paginate(index, nPages int, sortBy string) %}
+      <div id="paginationDiv" class="paginate">
+        <div class="paginate__container">
+          <a class="paginate__previous{% if index <= 1 %} paginate--disabled{% endif %}" page="{%d index-1 %}">
+            <i class="fas fa-angle-left"></i>
+            Prev
+          </a>
+          {% for i := 1; i < (nPages + 1); i++ %}
+          <a class="paginate__index{% if i == index %} paginate--selected{% endif %}" page="{%d i %}">{%d i %}</a>
+          {% endfor %}
+          <a class="paginate__next{% if index >= nPages %} paginate--disabled{% endif %}" page="{%d index+1 %}">
+            Next
+            <i class="fas fa-angle-right"></i>
+          </a>
+        </div>
+      </div>
+{% endfunc %}
+
+{% code
+func parseUnixTimestamp(layout, ts string) (string, error) {
+  i64, err := strconv.ParseInt(ts, 10, 64)
+  if err != nil {
+    return "", err
+  }
+  created := time.Unix(i64, 0)
+  return created.UTC().Format(layout), nil
+}
+%}

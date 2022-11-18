@@ -84,7 +84,8 @@ func (c *controller) GetIndexPage() []byte {
 }
 
 func (c *controller) GetLoginPage() []byte {
-	return []byte(strings.TrimSpace(templates.LoginPage()))
+	motd := ""
+	return []byte(strings.TrimSpace(templates.LoginPage(motd)))
 }
 
 func (c *controller) GetSignupPage() []byte {

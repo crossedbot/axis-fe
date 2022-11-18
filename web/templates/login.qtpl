@@ -1,6 +1,5 @@
-{% func LoginPage() %}
+{% func LoginPage(motd string) %}
 <!DOCTYPE html>
-<html>
   <head>
     <title>Axis - Login</title>
     <link rel="stylesheet" type="text/css" href="static/fontawesome/css/all.min.css" media="screen">
@@ -11,13 +10,35 @@
     <script src="static/js/axis.js"></script>
   </head>
   <body>
-    {%= NavigationBar() %}
     <div class="page">
-      <div class="form-contents">
+      <div class="grid">
+        <div class="grid__item col-2">
+          <a href="/">
+            <img src="/static/assets/logo.png" />
+          </a>
+        </div>
+        <div class="grid__item col-10">
+          <div style="height:100%;padding:8px 16px;">
+            <h1 class="title" style="color:#2591e4;margin:0;">Axis</h1>
+            <h2 style="color:#2581e4;margin:0;">IPFS Pinning Service</h2>
+          </div>
+        </div>
+      </div>
+      <div class="form-contents" style="min-height:60vh;">
         <div class="form-contents__container">
           {%= LoginForm() %}
         </div>
       </div>
+      <div class="center" style="height:10vh;padding:8px 16px;">
+        {% if motd != "" %}
+        <p>"{%s motd %}"</p>
+        {% endif %}
+      </div>
+      <div class="page__footer" style="height:6vh;">
+        <a href="#" class="link" style="margin:8px 16px;">TOS/Rules</a>
+        <a href="#" class="link" style="margin:8px 16px;">Privacy</a>
+        <a href="#" class="link" style="margin:8px 16px;">Links</a>
+     </div>
     </div>
   </body>
 </html>

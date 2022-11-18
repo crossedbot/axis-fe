@@ -24,11 +24,29 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
 }
 
+.center {
+  text-align: center;
+}
+
+.title {
+  font-size: 48px;
+}
+
+/* PAGE */
 .page {
   max-width: 900px;
   margin: auto;
   padding: 24px 0px;
 }
+.page__footer {
+  display: flex;
+  width: 900px;
+  margin: auto;
+  padding: 8px 16px;
+  align-content: center;
+  justify-content: center;
+}
+/* !PAGE */
 
 /* COLUMN */
 .col-1 {
@@ -621,7 +639,8 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   padding: 8px 16px;
 }
-.nav__item h1, h2, h3, h4, h5, h6 {
+.nav__item h1, .nav__item h2, .nav__item h3,
+.nav__item h4, .nav__item h5, .nav__item h6 {
   display: flex;
   align-items: center;
   margin: 0px;

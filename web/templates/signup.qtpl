@@ -5,6 +5,7 @@
     <title>Axis - Sign-up</title>
     <link rel="stylesheet" type="text/css" href="static/fontawesome/css/all.min.css" media="screen">
     <link rel="stylesheet" type="text/css" href="static/css/axiom.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="static/css/axis.css" media="screen">
 
     <script src="static/js/axiom.js"></script>
     <script src="static/js/simpleauth.js"></script>
@@ -43,8 +44,12 @@
               <input type="password" name="confirm" placeholder="confirm" class="form__password" />
             </div>
             <div class="form__section">
-              <label for="totp">Enable TOTP:</label>
               <input type="checkbox" name="totp" />
+              <label for="totp">Enable 2FA</label>
+            </div>
+            <div class="form__section">
+              <input type="checkbox" name="tos" />
+              <label for="tos">I agree to the <a href="#" class="link">Terms of Service</a></label>
             </div>
             <div class="form__section">
               <button type="submit" class="btn btn--block btn--primary">Register</button>

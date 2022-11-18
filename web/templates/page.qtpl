@@ -7,8 +7,8 @@
         </div>
         <div class="grid__item col-10">
           <div style="height:100%;padding:8px 16px;">
-            <h1 class="title" style="color:#2591e4;margin:0;">Axis</h1>
-            <h2 style="color:#2581e4;margin:0;">IPFS Pinning Service</h2>
+            <h1 class="title title--axis">Axis</h1>
+            <h2 class="title--axis">IPFS Pinning Service</h2>
           </div>
         </div>
       </div>
@@ -16,8 +16,8 @@
 
 {% func PageFooter() %}
       <div class="page__footer" style="height:6vh;">
-        <a href="#" class="link" style="margin:8px 16px;">TOS/Rules</a>
-        <a href="#" class="link" style="margin:8px 16px;">Privacy</a>
-        <a href="#" class="link" style="margin:8px 16px;">Links</a>
+        <a href="#" class="link">TOS/Rules</a>
+        <a href="#" class="link">Privacy</a>
+        <a href="#" class="link">Links</a>
      </div>
 {% endfunc %}

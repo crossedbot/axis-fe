@@ -4,6 +4,7 @@
     <title>Axis - Login</title>
     <link rel="stylesheet" type="text/css" href="static/fontawesome/css/all.min.css" media="screen">
     <link rel="stylesheet" type="text/css" href="static/css/axiom.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="static/css/axis.css" media="screen">
 
     <script src="static/js/axiom.js"></script>
     <script src="static/js/simpleauth.js"></script>
